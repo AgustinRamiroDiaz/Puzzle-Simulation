@@ -95,13 +95,14 @@ def solvePuzzle(pieces):
             else:
                 unmachedSides.append((side, position))
         
-        for unmatchedSide in unmachedSides:
-            unmachedSidesToPiecesAndSide[unmatchedSide] = piece
+        for unmatchedSide, position in unmachedSides:
+            unmachedSidesToPiecesAndSide[unmatchedSide] = (piece, position)
 
     return solution
 
 #%%
-solvePuzzle(listOfPieces)
+solution = solvePuzzle(listOfPieces)
+print(solution)
     
 
         
