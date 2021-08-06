@@ -83,27 +83,30 @@ def solvePuzzle(pieces):
 
     unmachedSidesToPiecesAndSide = {}
 
-    while pieces:
-        actualPiece = pieces.pop()
-        actualUnmachedSides = []
-        for side, position in zip(actualPiece, (LEFT, UP, RIGHT, DOWN)):
+    for piece in pieces:
+        unmachedSides = []
+        for side, position in zip(piece, (LEFT, UP, RIGHT, DOWN)):
             if side in unmachedSidesToPiecesAndSide:
                 matchedPiece, matchedPosition = unmachedSidesToPiecesAndSide[side]
                 del unmachedSidesToPiecesAndSide[side]
-                solution[actualPiece] = (matchedPiece, position, matchedPosition)
-                solution[matchedPiece] = (actualPiece, matchedPosition, position)
+                solution[piece] = (matchedPiece, position, matchedPosition)
+                solution[matchedPiece] = (piece, matchedPosition, position)
 
             else:
-                actualUnmachedSides.append((side, position))
+                unmachedSides.append((side, position))
         
-        for unmatchedSide in actualUnmachedSides:
-            unmachedSidesToPiecesAndSide[unmatchedSide] = actualPiece
+        for unmatchedSide in unmachedSides:
+            unmachedSidesToPiecesAndSide[unmatchedSide] = piece
 
     return solution
 
+#%%
+solvePuzzle(listOfPieces)
     
 
         
 
 
 
+
+# %%
