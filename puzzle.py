@@ -90,7 +90,6 @@ def solvePuzzle(pieces):
             if side in unmachedSidesToPiecesAndSide:
                 matchedPiece, matchedPosition = unmachedSidesToPiecesAndSide[side]
                 del unmachedSidesToPiecesAndSide[side]
-                # TODO: agregar lados
                 solution[actualPiece] = (matchedPiece, position, matchedPosition)
                 solution[matchedPiece] = (actualPiece, matchedPosition, position)
 
