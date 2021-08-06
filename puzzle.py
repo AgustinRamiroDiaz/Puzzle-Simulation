@@ -106,6 +106,7 @@ def solvePuzzle(pieces):
             unmachedSidesToPiecesAndSide[unmatchedSide] = (piece, position)
 
     assert(not unmachedSidesToPiecesAndSide)
+    assert(all([piece[position] == matchedPiece[matchedPosition] for piece, (matchedPiece, position, matchedPosition) in solution.items()]))
 
     return solution
 
@@ -113,11 +114,13 @@ def solvePuzzle(pieces):
 # %%
 solution = solvePuzzle(listOfPieces)
 print(solution)
+# TODO llevar frutillas
 
 # %%
 class Polyomino:
     def __init__(self, tile) -> None:
         self.tilePosition = {(0, 0): tile}
         self.tileOutline = {(-1, 0), (0, 1), (1, 0), (0, -1)}
-        
+
     
+# %%
