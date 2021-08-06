@@ -115,3 +115,9 @@ solution = solvePuzzle(listOfPieces)
 print(solution)
 
 # %%
+class Polyomino:
+    def __init__(self, tile) -> None:
+        self.tilePosition = {(0, 0): tile}
+        self.tileOutline = {(-1, 0), (0, 1), (1, 0), (0, -1)}
+        
+    
