@@ -1,4 +1,5 @@
 # %%
+from collections import defaultdict
 from random import randint
 LEFT = 0
 UP = 1
@@ -83,9 +84,9 @@ print(listOfPieces)
 
 def solvePuzzle(pieces):
     # solution is in the form of {piece: (neighbourPiece, pieceSide, neighbourPieceSide)} for all piece pairs
-    solution = {}
+    solution = defaultdict(list)
 
-    unmachedSidesToPiecesAndSide = {}
+    unmachedSidesToPiecesAndPosition = {}
 
     for piece in pieces:
         unmachedSides = []
@@ -93,20 +94,28 @@ def solvePuzzle(pieces):
             if side == BORDER:
                 continue
 
-            if side in unmachedSidesToPiecesAndSide:
-                matchedPiece, matchedPosition = unmachedSidesToPiecesAndSide[side]
-                del unmachedSidesToPiecesAndSide[side]
-                solution[piece] = (matchedPiece, position, matchedPosition)
-                solution[matchedPiece] = (piece, matchedPosition, position)
+            if side in unmachedSidesToPiecesAndPosition:
+                matchedPiece, matchedPosition = unmachedSidesToPiecesAndPosition[side]
+                del unmachedSidesToPiecesAndPosition[side]
+                solution[piece] += [(matchedPiece, position, matchedPosition)]
+                solution[matchedPiece] += [(piece, matchedPosition, position)]
 
             else:
                 unmachedSides.append((side, position))
 
         for unmatchedSide, position in unmachedSides:
-            unmachedSidesToPiecesAndSide[unmatchedSide] = (piece, position)
+            unmachedSidesToPiecesAndPosition[unmatchedSide] = (piece, position)
 
-    assert(not unmachedSidesToPiecesAndSide)
-    assert(all([piece[position] == matchedPiece[matchedPosition] for piece, (matchedPiece, position, matchedPosition) in solution.items()]))
+    assert(not unmachedSidesToPiecesAndPosition)
+    assert(all([piece[position] == matchedPiece[matchedPosition] for piece, neighbours in solution.items()
+           for (matchedPiece, position, matchedPosition) in neighbours]))
+
+    count_of_pieces_of_neighbours_234 = [0, 0, 0]
+    for key, value in solution.items():
+        count_of_pieces_of_neighbours_234[len(value) - 2] += 1
+
+    assert(len(pieces) == sum(count_of_pieces_of_neighbours_234))
+    assert(count_of_pieces_of_neighbours_234[0] == 4)
 
     return solution
 
@@ -114,13 +123,67 @@ def solvePuzzle(pieces):
 # %%
 solution = solvePuzzle(listOfPieces)
 print(solution)
-# TODO llevar frutillas
 
 # %%
+
+
 class Polyomino:
     def __init__(self, tile) -> None:
         self.tilePosition = {(0, 0): tile}
         self.tileOutline = {(-1, 0), (0, 1), (1, 0), (0, -1)}
 
+    def addTile(self, tile, coordinates):
+        """coordinates of type (x, y)"""
+        assert(coordinates in self.tileOutline)
+        self.tileOutline.remove(coordinates)
+        self.tilePosition[coordinates] = tile
+
+        x, y = coordinates
+
+        for neighbour in ((x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)):
+            if neighbour not in self.tilePosition:
+                self.tileOutline.add(neighbour)
+
+    def toMatrix(self):
+        xs, ys = zip(*self.tilePosition)
+        
+        matrix = []
+        for y in range(max(ys), min(ys) + 1, -1):
+            row = []
+            for x in range(min(xs), max(xs) + 1):
+                if (x, y) in self.tilePosition:
+                    row += [self.tilePosition[(x, y)]]
+                else:
+                    row += [None]
+            matrix.append(row)
+
+        return matrix
     
+    def __str__(self) -> str:
+        allPositions = list(self.tilePosition) + list(self.tileOutline)
+        xs, ys = zip(*allPositions)
+        
+        result = ''
+        for y in range(max(ys), min(ys) - 1, -1):
+            for x in range(min(xs), max(xs) + 1):
+                if (x, y) in self.tilePosition:
+                    result += '#'
+                elif (x, y) in self.tileOutline:
+                    result += '.'
+                else:
+                    result += ' '
+
+            result += '\n'
+
+        return result
+
+
+
 # %%
+
+def solutionToMatrix(solution):
+    for piece, neighbours in solution.items():
+        break
+
+    p = Polyomino(piece)
+    
