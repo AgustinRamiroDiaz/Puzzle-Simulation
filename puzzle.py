@@ -1,15 +1,18 @@
 # %%
+from random import randint
 LEFT = 0
 UP = 1
 RIGHT = 2
 DOWN = 3
+
+BORDER = 0
 
 
 def createPuzzle(widthLength, heightLength):
     width = range(widthLength)
     height = range(heightLength)
     # Each piece is [left, up, right, down]
-    puzzle = [[[0, 0, 0, 0] for column in width] for row in height]
+    puzzle = [[[BORDER] * 4 for column in width] for row in height]
 
     cutValue = 32
     for row in height[:-1]:
@@ -64,19 +67,20 @@ def rotatePieceClockwise(piece, numberOfRotations):
     rotations = numberOfRotations % len(piece)
     return piece[rotations:] + piece[:rotations]
 
+
 # %%
 puzzle = createPuzzle(5, 5)
 print(puzzleToString(puzzle))
 
-from random import randint
 
-listOfPieces = [tuple(rotatePieceClockwise(piece, randint(0, 15))) for row in puzzle for piece in row]
-
-
+listOfPieces = [tuple(rotatePieceClockwise(piece, randint(0, 15)))
+                for row in puzzle for piece in row]
 
 
 print(listOfPieces)
 # %%
+
+
 def solvePuzzle(pieces):
     # solution is in the form of {piece: (neighbourPiece, pieceSide, neighbourPieceSide)} for all piece pairs
     solution = {}
@@ -86,6 +90,9 @@ def solvePuzzle(pieces):
     for piece in pieces:
         unmachedSides = []
         for side, position in zip(piece, (LEFT, UP, RIGHT, DOWN)):
+            if side == BORDER:
+                continue
+
             if side in unmachedSidesToPiecesAndSide:
                 matchedPiece, matchedPosition = unmachedSidesToPiecesAndSide[side]
                 del unmachedSidesToPiecesAndSide[side]
@@ -94,20 +101,17 @@ def solvePuzzle(pieces):
 
             else:
                 unmachedSides.append((side, position))
-        
+
         for unmatchedSide, position in unmachedSides:
             unmachedSidesToPiecesAndSide[unmatchedSide] = (piece, position)
 
+    assert(not unmachedSidesToPiecesAndSide)
+
     return solution
 
-#%%
+
+# %%
 solution = solvePuzzle(listOfPieces)
 print(solution)
-    
-
-        
-
-
-
 
 # %%
