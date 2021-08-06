@@ -60,9 +60,51 @@ def puzzleToString(puzzle):
 # %%
 
 
+def rotatePieceClockwise(piece, numberOfRotations):
+    rotations = numberOfRotations % len(piece)
+    return piece[rotations:] + piece[:rotations]
+
+# %%
 puzzle = createPuzzle(5, 5)
 print(puzzleToString(puzzle))
 
-listOfPieces = [piece for row in puzzle for piece in row]
+from random import randint
 
+listOfPieces = [tuple(rotatePieceClockwise(piece, randint(0, 15))) for row in puzzle for piece in row]
+
+
+
+
+print(listOfPieces)
 # %%
+def solvePuzzle(pieces):
+    # solution is in the form of {piece: (neighbourPiece, pieceSide, neighbourPieceSide)} for all piece pairs
+    solution = {}
+
+    unmachedSidesToPiecesAndSide = {}
+
+    while pieces:
+        actualPiece = pieces.pop()
+        actualUnmachedSides = []
+        for side, position in zip(actualPiece, (LEFT, UP, RIGHT, DOWN)):
+            if side in unmachedSidesToPiecesAndSide:
+                matchedPiece, matchedPosition = unmachedSidesToPiecesAndSide[side]
+                del unmachedSidesToPiecesAndSide[side]
+                # TODO: agregar lados
+                solution[actualPiece] = (matchedPiece, position, matchedPosition)
+                solution[matchedPiece] = (actualPiece, matchedPosition, position)
+
+            else:
+                actualUnmachedSides.append((side, position))
+        
+        for unmatchedSide in actualUnmachedSides:
+            unmachedSidesToPiecesAndSide[unmatchedSide] = actualPiece
+
+    return solution
+
+    
+
+        
+
+
+
